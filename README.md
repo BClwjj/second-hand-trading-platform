@@ -24,5 +24,7 @@
 3. 使用Tomcat 9+部署
 
 ## 📸 界面预览
-![首页](screenshots/home.png)
+1.首页
+
+![首页](./screenshot/1.png)
 ![商品详情](screenshots/goods-detail.png)
