@@ -42,7 +42,7 @@
 
 5.商品详情
 
-![商品详情](./screenshot/8.png)
+![商品详情](./screenshot/10.png)
 
 6.用户管理
 
