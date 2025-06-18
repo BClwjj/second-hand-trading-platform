@@ -27,4 +27,31 @@
 1.首页
 
 ![首页](./screenshot/1.png)
-![商品详情](screenshots/goods-detail.png)
+
+2.管理员页面
+
+![管理员(./screenshot/屏幕截图 2025-06-18 173505.png)
+
+3.个人中心
+
+![用户中心](./screenshot/2.png)
+
+4.商品列表
+
+![商品列表](./screenshot/7.png)
+
+5.商品详情
+
+![商品详情](./screenshot/8.png)
+
+6.用户管理
+
+![用户管理](./screenshot/3.png)
+
+7.商品管理
+
+![商品管理](./screenshot/4.png)
+
+8.我的商品列表
+
+![我的商品列表](./screenshot/6.png)
