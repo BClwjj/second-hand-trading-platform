@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itheima.dao.OrderMapper">
+    <select id="findByUserId" resultType="com.itheima.domain.Order">
+        SELECT o.*,
+               p.name as product_name,
+               u1.username as buyer_name,
+               u2.username as seller_name
+        FROM `order` o
+                 JOIN goods p ON o.product_id = p.id
+                 JOIN user u1 ON o.buyer_id = u1.user_id
+                 JOIN user u2 ON o.seller_id = u2.user_id
+        WHERE o.buyer_id = #{userId} OR o.seller_id = #{userId}
+        ORDER BY o.create_time DESC
+    </select>
+    <insert id="insert" parameterType="com.itheima.domain.Order">
+        INSERT INTO `order` (
+            order_id, buyer_id, product_id, seller_id, status, price,
+            buyer_message, trade_method, create_time, update_time
+        ) VALUES (
+                     #{orderId}, #{buyerId}, #{productId}, #{sellerId}, #{status}, #{price},
+                     #{buyerMessage}, #{tradeMethod}, #{createTime}, #{updateTime}
+                 )
+    </insert>
+
+    <select id="findById" resultMap="orderResultMap">
+        SELECT o.*,
+               p.name as product_name,
+               u1.username as buyer_name,
+               u2.username as seller_name
+        FROM `order` o
+                 JOIN goods p ON o.product_id = p.id
+                 JOIN user u1 ON o.buyer_id = u1.user_id
+                 JOIN user u2 ON o.seller_id = u2.user_id
+        WHERE o.order_id = #{orderId}
+    </select>
+    <!-- 新增SQL -->
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*) FROM `order`
+    </select>
+
+    <select id="findRecent" resultMap="orderResultMap">
+        SELECT o.*,
+               p.name as product_name,
+               u1.username as buyer_name,
+               u2.username as seller_name
+        FROM `order` o
+                 JOIN goods p ON o.product_id = p.id
+                 JOIN user u1 ON o.buyer_id = u1.user_id
+                 JOIN user u2 ON o.seller_id = u2.user_id
+        ORDER BY o.create_time DESC
+            LIMIT #{limit}
+    </select>
+
+    <select id="findAll" resultMap="orderResultMap">
+        SELECT o.*,
+               p.name as product_name,
+               u1.username as buyer_name,
+               u2.username as seller_name
+        FROM `order` o
+                 JOIN goods p ON o.product_id = p.id
+                 JOIN user u1 ON o.buyer_id = u1.user_id
+                 JOIN user u2 ON o.seller_id = u2.user_id
+        ORDER BY o.create_time DESC
+    </select>
+
+    <update id="updateStatus">
+        UPDATE `order` SET
+                           status = #{status},
+                           update_time = NOW()
+        WHERE order_id = #{orderId}
+    </update>
+
+    <delete id="deleteById" parameterType="string">
+        DELETE FROM `order`
+        WHERE order_id = #{orderId}
+    </delete>
+    <resultMap id="orderResultMap" type="com.itheima.domain.Order">
+        <id property="orderId" column="order_id"/>
+        <result property="buyerId" column="buyer_id"/>
+        <result property="productId" column="product_id"/>
+        <result property="sellerId" column="seller_id"/>
+        <result property="status" column="status"/>
+        <result property="price" column="price"/>
+        <result property="buyerMessage" column="buyer_message"/>
+        <result property="tradeMethod" column="trade_method"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <association property="product" javaType="com.itheima.domain.Goods">
+            <id property="id" column="product_id"/>
+            <result property="name" column="product_name"/>
+        </association>
+        <association property="buyer" javaType="com.itheima.domain.User">
+            <id property="userId" column="buyer_id"/>
+            <result property="username" column="buyer_name"/>
+        </association>
+        <association property="seller" javaType="com.itheima.domain.User">
+            <id property="userId" column="seller_id"/>
+            <result property="username" column="seller_name"/>
+        </association>
+    </resultMap>
+</mapper>

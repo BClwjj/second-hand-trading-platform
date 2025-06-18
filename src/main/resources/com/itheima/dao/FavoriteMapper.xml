@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.dao.FavoriteMapper">
+
+    <insert id="insert" parameterType="com.itheima.domain.Favorite" useGeneratedKeys="true" keyProperty="favoriteId">
+        INSERT INTO favorite (user_id, goods_id, create_time)
+        VALUES (#{userId}, #{goodsId}, #{createTime})
+    </insert>
+
+    <delete id="delete">
+        DELETE FROM favorite
+        WHERE user_id = #{userId} AND goods_id = #{goodsId}
+    </delete>
+
+    <select id="findByUserId" resultMap="favoriteResultMap">
+        SELECT * FROM favorite WHERE user_id = #{userId} ORDER BY create_time DESC
+    </select>
+
+    <select id="findByUserAndGoods" resultType="com.itheima.domain.Favorite">
+        SELECT * FROM favorite
+        WHERE user_id = #{userId} AND goods_id = #{goodsId}
+            LIMIT 1
+    </select>
+
+    <select id="countByGoodsId" resultType="int">
+        SELECT COUNT(*) FROM favorite WHERE goods_id = #{goodsId}
+    </select>
+
+    <resultMap id="favoriteResultMap" type="com.itheima.domain.Favorite">
+        <id property="favoriteId" column="favorite_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="createTime" column="create_time"/>
+        <!-- 关联商品信息 -->
+        <association property="goods" column="goods_id"
+                     select="com.itheima.dao.GoodsMapper.findById"/>
+        <!-- 关联用户信息 -->
+        <association property="user" column="user_id"
+                     select="com.itheima.dao.UserMapper.findById"/>
+    </resultMap>
+</mapper>

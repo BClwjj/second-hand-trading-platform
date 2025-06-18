@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itheima.dao.UserMapper">
+    <resultMap id="userResultMap" type="com.itheima.domain.User">
+        <id property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="phone" column="phone"/>
+        <result property="address" column="address"/>
+        <result property="avatar" column="avatar"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="status" column="status"/>
+        <result property="role" column="role"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.itheima.domain.User" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO user (
+            username, password, email, phone, address, avatar,
+            create_time, update_time, status, role
+        ) VALUES (
+                     #{username}, #{password}, #{email}, #{phone}, #{address}, #{avatar},
+                     #{createTime}, #{updateTime}, #{status}, #{role}
+                 )
+    </insert>
+
+    <select id="findByUsernameAndPassword" resultMap="userResultMap">
+        SELECT * FROM user
+        WHERE username = #{username} AND password = #{password}
+    </select>
+
+
+    <select id="findById" resultMap="userResultMap">
+        SELECT * FROM user WHERE user_id = #{userId}
+    </select>
+
+    <select id="findByUsername" resultMap="userResultMap">
+        SELECT * FROM user WHERE username = #{username}
+    </select>
+
+    <select id="findByEmail" resultMap="userResultMap">
+        SELECT * FROM user WHERE email = #{email}
+    </select>
+
+    <select id="findAll" resultMap="userResultMap">
+        SELECT * FROM user ORDER BY create_time DESC
+    </select>
+
+    <select id="findByKeyword" resultMap="userResultMap">
+        SELECT * FROM user
+        WHERE username LIKE #{keyword}
+           OR email LIKE #{keyword}
+           OR phone LIKE #{keyword}
+        ORDER BY create_time DESC
+    </select>
+
+
+    <update id="update" parameterType="com.itheima.domain.User">
+        UPDATE user SET
+                        username = #{username},
+                        password = #{password},
+                        email = #{email},
+                        phone = #{phone},
+                        address = #{address},
+                        avatar = #{avatar},
+                        update_time = #{updateTime},
+                        status = #{status},
+                        role = #{role}
+        WHERE user_id = #{userId}
+    </update>
+
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*) FROM user
+    </select>
+    <update id="updateStatus">
+        UPDATE user SET status = #{status} WHERE user_id = #{userId}
+    </update>
+    <delete id="deleteById">
+        DELETE FROM user WHERE user_id = #{userId}
+    </delete>
+</mapper>

@@ -1,0 +1,205 @@
+:root {
+    --primary-color: #ff6700;
+    --secondary-color: #333;
+    --gray-color: #999;
+    --border-color: #e0e0e0;
+}
+
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+    padding: 20px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 450px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    position: relative;
+}
+
+.auth-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), #ff9d00);
+}
+
+.auth-title {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 24px;
+    color: var(--secondary-color);
+    font-weight: 600;
+    position: relative;
+}
+
+.auth-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background-color: var(--primary-color);
+    border-radius: 3px;
+}
+
+.auth-title i {
+    margin-right: 10px;
+    color: var(--primary-color);
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.label-with-icon {
+    display: flex;
+    align-items: center;
+    min-width: 100px; /* 固定标签宽度 */
+    margin-right: 20px;
+    font-weight: 500;
+    color: var(--secondary-color);
+}
+
+.label-with-icon i {
+    margin-right: 8px;
+    color: var(--gray-color);
+    font-size: 1.1rem;
+}
+
+.input-container {
+    flex: 1;
+    position: relative;
+}
+
+.form-control {
+    width: 100%;
+    height: 48px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0 15px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(255, 103, 0, 0.1);
+}
+
+.text-end {
+    text-align: right;
+    font-size: 0.9rem;
+    color: var(--gray-color);
+}
+.btn-primary {
+    --bs-btn-bg: var(--primary-color);
+}
+.auth-footer {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 0.9rem;
+    color: var(--gray-color);
+}
+
+.auth-footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.social-login {
+    margin-top: 30px;
+}
+
+.social-login-title {
+    position: relative;
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--gray-color);
+    font-size: 0.9rem;
+}
+
+.social-login-title::before,
+.social-login-title::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 30%;
+    height: 1px;
+    background-color: var(--border-color);
+}
+
+.social-login-title::before {
+    left: 0;
+}
+
+.social-login-title::after {
+    right: 0;
+}
+
+.social-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.social-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    transition: all 0.3s;
+}
+
+.social-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.social-btn.wechat {
+    background-color: #07C160;
+}
+
+.social-btn.qq {
+    background-color: #12B7F5;
+}
+
+.social-btn.weibo {
+    background-color: #E6162D;
+}
+
+/* 响应式调整 */
+@media (max-width: 576px) {
+    .auth-card {
+        padding: 30px 20px;
+    }
+
+    .label-with-icon {
+        min-width: 80px;
+        margin-right: 15px;
+    }
+
+    .form-control {
+        height: 44px;
+        padding: 0 12px;
+    }
+}

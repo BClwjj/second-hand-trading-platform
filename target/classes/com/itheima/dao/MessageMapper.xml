@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.dao.MessageMapper">
+
+    <insert id="insert" parameterType="com.itheima.domain.Message">
+        INSERT INTO message
+            (user_id, sender_id, title, content, status, create_time)
+        VALUES
+            (#{userId}, #{senderId}, #{title}, #{content}, #{status}, NOW())
+    </insert>
+
+    <select id="selectByUserId" parameterType="int" resultType="com.itheima.domain.Message">
+        SELECT * FROM message
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectById" parameterType="int" resultType="com.itheima.domain.Message">
+        SELECT * FROM message
+        WHERE message_id = #{messageId}
+    </select>
+    <select id="findByUsername" parameterType="String" resultType="com.itheima.domain.User">
+        SELECT * FROM user WHERE username = #{username}
+    </select>
+    <update id="updateStatus" parameterType="map">
+        UPDATE message
+        SET status = #{status}
+        WHERE message_id = #{messageId}
+    </update>
+
+    <update id="updateAllStatus" parameterType="map">
+        UPDATE message
+        SET status = #{status}
+        WHERE user_id = #{userId} AND status = 0
+    </update>
+
+    <delete id="deleteById" parameterType="int">
+        DELETE FROM message
+        WHERE message_id = #{messageId}
+    </delete>
+    <update id="markOrderMessagesAsDeleted" parameterType="string">
+        UPDATE message
+        SET deleted = 1
+        WHERE content LIKE concat('%', #{orderId}, '%')
+    </update>
+    <!-- 新增：获取用户消息（带deleted过滤） -->
+    <select id="findMessagesByUserId" resultType="com.itheima.domain.Message">
+        SELECT *
+        FROM message
+        WHERE user_id = #{userId}
+        AND deleted = 0  <!-- 只查询未删除的消息 -->
+        ORDER BY create_time DESC
+    </select>
+    <select id="getConversation" resultType="com.itheima.domain.Message">
+        SELECT * FROM message
+        WHERE (user_id = #{currentUserId} AND sender_id = #{otherUserId})
+           OR (user_id = #{otherUserId} AND sender_id = #{currentUserId})
+        ORDER BY create_time ASC
+    </select>
+</mapper>

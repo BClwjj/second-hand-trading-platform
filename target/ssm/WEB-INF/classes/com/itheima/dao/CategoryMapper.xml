@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.dao.CategoryMapper">
+    <select id="findAll" resultType="com.itheima.domain.Category">
+        SELECT * FROM category ORDER BY sort ASC
+    </select>
+    <resultMap id="categoryResultMap" type="com.itheima.domain.Category">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="icon" column="icon"/>
+        <result property="sort" column="sort"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="findById" resultMap="categoryResultMap">
+        SELECT * FROM category WHERE id = #{id}
+    </select>
+    <!-- 新增SQL -->
+
+    <insert id="insert" parameterType="com.itheima.domain.Category" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO category (name, icon, sort, status, create_time)
+        VALUES (#{name}, #{icon}, #{sort}, #{status}, NOW())
+    </insert>
+
+    <update id="update" parameterType="com.itheima.domain.Category">
+        UPDATE category SET
+                            name = #{name},
+                            icon = #{icon},
+                            sort = #{sort},
+                            status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE category SET status = #{status} WHERE id = #{id}
+    </update>
+    <delete id="deleteById">
+        DELETE FROM category WHERE id = #{id}
+    </delete>
+    <select id="findCategoryWithGoodsCount" resultType="map">
+        SELECT
+            c.id, c.name, c.sort, c.status,
+            (SELECT COUNT(g.id) FROM goods g WHERE g.category_id = c.id AND g.status = 1) AS goodsCount
+        FROM
+            category c
+        ORDER BY
+            c.sort ASC
+    </select>
+</mapper>

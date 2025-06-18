@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itheima.dao.GoodsMapper">
+    <resultMap id="goodsResultMap" type="com.itheima.domain.Goods">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="price" column="price"/>
+        <result property="mainImage" column="main_image"/>
+        <result property="images" column="images"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="status" column="status"/>
+        <result property="viewCount" column="view_count"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <association property="category" javaType="com.itheima.domain.Category">
+            <id property="id" column="category_id"/>
+            <result property="name" column="category_name"/>
+            <result property="icon" column="category_icon"/>
+        </association>
+        <association property="seller" javaType="com.itheima.domain.User">
+            <id property="userId" column="user_id"/>
+            <result property="username" column="seller_username"/>
+            <result property="avatar" column="seller_avatar"/>
+        </association>
+    </resultMap>
+
+    <!-- 根据ID查询商品 -->
+    <select id="findById" resultMap="goodsResultMap">
+        SELECT
+            g.*,
+            c.id as category_id,
+            c.name as category_name,
+            c.icon as category_icon,
+            u.user_id as user_id,
+            u.username as seller_username,
+            u.avatar as seller_avatar
+        FROM goods g
+                 LEFT JOIN category c ON g.category_id = c.id
+                 JOIN user u ON g.user_id = u.user_id
+        WHERE g.id = #{id}
+    </select>
+
+    <!-- 增加浏览量 -->
+    <update id="increaseViewCount">
+        UPDATE goods SET view_count = view_count + 1
+        WHERE id = #{goodsId}
+    </update>
+
+    <!-- 插入商品 -->
+    <insert id="insert" parameterType="com.itheima.domain.Goods"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO goods (
+            name, description, price, main_image, images, category_id, user_id,
+            status, view_count, create_time, update_time
+        ) VALUES (
+                     #{name}, #{description}, #{price}, #{mainImage}, #{images}, #{categoryId}, #{userId},
+                     #{status}, #{viewCount}, #{createTime}, #{updateTime}
+                 )
+    </insert>
+
+    <!-- 搜索商品 -->
+    <select id="searchGoods" resultMap="goodsResultMap">
+        SELECT
+        g.*,
+        u.username as seller_username,
+        u.avatar as seller_avatar
+        FROM goods g
+        JOIN user u ON g.user_id = u.user_id
+        WHERE g.status = 1
+        <if test="keyword != null and keyword != ''">
+            AND (g.name LIKE CONCAT('%', #{keyword}, '%')
+            OR g.description LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="categoryId != null">
+            AND g.category_id = #{categoryId}
+        </if>
+        <!-- 明确使用数据库列名进行排序 -->
+        ORDER BY
+        CASE #{orderBy}
+        WHEN 'viewCount' THEN g.view_count
+        WHEN 'price_asc' THEN g.price
+        WHEN 'price_desc' THEN g.price
+        ELSE g.create_time
+        END DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <!-- 根据用户ID查询商品 -->
+    <select id="findByUserId" resultMap="goodsResultMap">
+        SELECT
+            g.*,
+            u.username as seller_username,
+            u.avatar as seller_avatar
+        FROM goods g
+                 JOIN user u ON g.user_id = u.user_id
+        WHERE g.user_id = #{userId}
+        ORDER BY g.create_time DESC
+    </select>
+
+    <!-- 更新商品信息 -->
+    <update id="update" parameterType="com.itheima.domain.Goods">
+        UPDATE goods SET
+                         name = #{name},
+                         description = #{description},
+                         price = #{price},
+                         main_image = #{mainImage},
+                         images = #{images},
+                         category_id = #{categoryId},
+                         user_id = #{userId},
+                         status = #{status},
+                         update_time = #{updateTime}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 更新商品状态 -->
+    <update id="updateStatus">
+        UPDATE goods SET
+                         status = #{status},
+                         update_time = NOW()
+        WHERE id = #{goodsId}
+    </update>
+
+    <!-- 查询热门商品 -->
+    <select id="findHotGoods" resultMap="goodsResultMap">
+        SELECT
+            g.*,
+            u.username as seller_username,
+            u.avatar as seller_avatar
+        FROM goods g
+                 JOIN user u ON g.user_id = u.user_id
+        WHERE g.status = 1
+        ORDER BY g.view_count DESC
+            LIMIT #{limit}
+    </select>
+
+    <!-- 查询最新商品 -->
+    <select id="findNewGoods" resultMap="goodsResultMap">
+        SELECT
+            g.*,
+            u.username as seller_username,
+            u.avatar as seller_avatar
+        FROM goods g
+                 JOIN user u ON g.user_id = u.user_id
+        WHERE g.status = 1
+        ORDER BY g.create_time DESC
+            LIMIT #{limit}
+    </select>
+
+    <!-- 查询推荐商品 -->
+    <select id="findRecommendGoods" resultMap="goodsResultMap">
+        SELECT
+            g.*,
+            u.username as seller_username,
+            u.avatar as seller_avatar
+        FROM goods g
+                 JOIN user u ON g.user_id = u.user_id
+        WHERE g.status = 1
+        ORDER BY RAND()  <!--随机排序-->
+            LIMIT #{limit}
+    </select>
+
+    <!-- 查询所有商品数量 -->
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*) FROM goods
+    </select>
+
+    <!-- 按状态查询商品数量 -->
+    <select id="countByStatus" resultType="int">
+        SELECT COUNT(*) FROM goods WHERE status = #{status}
+    </select>
+
+    <!-- 按状态查询商品（带限制） -->
+    <select id="findByStatus" resultMap="goodsResultMap">
+        SELECT
+            g.*,
+            u.username as seller_username,
+            u.avatar as seller_avatar
+        FROM goods g
+                 JOIN user u ON g.user_id = u.user_id
+        WHERE g.status = #{status}
+        ORDER BY g.create_time DESC
+            LIMIT #{limit}
+    </select>
+
+    <!-- 按状态分页查询商品 -->
+    <select id="findByStatusWithPagination" resultMap="goodsResultMap">
+        SELECT
+            g.*,
+            u.username as seller_username,
+            u.avatar as seller_avatar
+        FROM goods g
+                 JOIN user u ON g.user_id = u.user_id
+        WHERE g.status = #{status}
+        ORDER BY g.create_time DESC
+            LIMIT #{offset}, #{size}
+    </select>
+
+    <!-- 管理员查询所有商品（分页） -->
+    <select id="findAllForAdmin" resultMap="goodsResultMap">
+        SELECT
+            g.*,
+            u.username as seller_username,
+            u.avatar as seller_avatar
+        FROM goods g
+                 JOIN user u ON g.user_id = u.user_id
+        ORDER BY g.create_time DESC
+            LIMIT #{offset}, #{size}
+    </select>
+
+    <!-- 管理员搜索商品 -->
+    <select id="searchGoodsForAdmin" resultMap="goodsResultMap">
+        SELECT
+        g.*,
+        u.username as seller_username,
+        u.avatar as seller_avatar
+        FROM goods g
+        JOIN user u ON g.user_id = u.user_id
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND (g.name LIKE CONCAT('%', #{keyword}, '%')
+            OR g.description LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null">
+            AND g.status = #{status}
+        </if>
+        ORDER BY g.create_time DESC
+        LIMIT #{offset}, #{size}
+    </select>
+    <!--删除商品-->
+    <delete id="deleteById" >
+        DELETE FROM goods WHERE id = #{id}
+    </delete>
+</mapper>
